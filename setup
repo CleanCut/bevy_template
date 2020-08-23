@@ -1,0 +1,129 @@
+#!/usr/bin/env bash
+
+function ask_yn() {
+  read -rp "❓ $1 (Y/n) " answer
+  if [[ "$answer" == "" || "$answer" == "y" || "$answer" == "Y" || "$answer" == "yes" || "$answer" == "Yes" ]] ; then
+    return 0
+  else
+    return 1
+  fi
+}
+
+function result() {
+  echo "⚡ $1"
+}
+
+function info() {
+  echo "💡 $1"
+}
+
+# --- Set package.name in Cargo.toml ---
+name_with_ext=$(git remote show -n origin | grep "Fetch URL" | cut -d / -f 2-)
+name="${name_with_ext%.*}"
+if grep -q "bevy_template" Cargo.toml ; then
+  if ask_yn "Set the package name to ${name}?" ; then
+    sed -e "s/bevy_template/${name}/" -i "" Cargo.toml \
+      && result "Set package name to ${name}"
+  else
+    result "Okay, you should go set the package name in Cargo.toml manually."
+  fi
+else
+  info "Package name already set."
+fi
+
+# --- Set package.authors in Cargo.toml ---
+if grep -q "Unknown Author" Cargo.toml ; then
+  DEFAULT_AUTHOR="$(git config --global user.name) <$(git config --global user.email)>"
+  if ask_yn "Set the author to ${DEFAULT_AUTHOR}?" ; then
+    sed -E -e "s/Unknown Author <unknown@example.com>/${DEFAULT_AUTHOR}/" -i "" Cargo.toml \
+      && result "Set author to ${DEFAULT_AUTHOR}"
+  else
+    result "Okay, you should go set the author in Cargo.toml manually."
+  fi
+else
+  info "Author already set."
+fi
+
+# --- Set latest version of Bevy ---
+json=$(curl --silent --user-agent "bevy_template (github.com/cleancut/bevy_template)" https://crates.io/api/v1/crates/bevy)
+version=$(echo "${json}" | grep -oE '"max_version":".*?"' | cut -d '"' -f 4)
+if ! grep -qE "^bevy = \"${version}\"\$" Cargo.toml ; then
+  if ask_yn "Try to update to the latest version of Bevy ($version)? If you have customized the version string, say no here." ; then
+    sed -E -e "s/^bevy = \".*\"\$/bevy = \"${version}\"/" -i "" Cargo.toml
+    result "Updated to version $version"
+  else
+    result "Okay, leaving the version alone."
+  fi
+else
+  info "Bevy is already on the latest version (${version}), skipping version update."
+fi
+
+# --- Configure fast-compile ---
+if [[ -f .cargo/config.fast ]] ; then
+  if ask_yn "Fast-compile is not configured. Would you like me to set it up now? If you don't want to use the nightly compiler, answer 'no'." ; then
+    mv .cargo/config.fast .cargo/config
+    result "Configured fast-compile."
+    if [[ $(uname) != "Darwin" ]] ; then
+      echo "⚠️ PLEASE INSTALL LLD!  Instructions are available at https://bevyengine.org/learn/book/getting-started/setup/"
+    fi
+  else
+    result "Okay, not configuring fast-compile."
+  fi
+elif [[ -f .cargo/config ]] && grep -q -- "-Zshare-generics=y" .cargo/config ; then
+  info "Fast-compile is already configured. If you want to disable it, delete or comment out .cargo/config"
+fi
+
+# --- Install nightly compiler ---
+if rustup toolchain list | grep -q nightly ; then
+  info "Nightly compiler already installed."
+else
+  if ask_yn "No nightly compiler installed. Install it via rustup? Answer 'yes' if you configured fast-compile." ; then
+    rustup install nightly
+    result "Done installing nightly compiler."
+  else
+    result "Okay, not installing nightly compiler."
+  fi
+fi
+
+# --- Configure project to use nightly compiler ---
+if rustup toolchain list | grep -q nightly ; then
+  if rustup override list | grep -qE "$(pwd).*nightly" ; then
+    info "Already using nightly compiler for this project."
+  else
+    if ask_yn "Configure this project to use the nightly compiler? Answer 'yes' if you configured fast-compile." ; then
+      rustup override set nightly
+      result "Configured project to use the nightly compiler."
+    else
+      result "Okay, not configuring project to use the nightly compiler."
+    fi
+  fi
+else
+  info "Nightly is not installed, skipping step for configuring project to use nightly."
+fi
+
+# --- Replace README.md ---
+if [[ -f README.md ]] && grep -q "Bevy Template" README.md ; then
+  if ask_yn "Replace template README.md with a blank one?" ; then
+    echo "# My Project" > README.md
+    result "Replaced README.md with blank one."
+  else
+    result "Okay, left template README.md in place."
+  fi
+else
+  info "README.md has already been replaced"
+fi
+
+# --- Delete the license ---
+if [[ -f LICENSE ]] && grep -q "Nathan Stocks" LICENSE ; then
+  if ask_yn "Delete the LICENSE file so you can add your own?" ; then
+    rm LICENSE
+    result "Deleted the LICENSE file that belonged to the template. Feel free to license your project in whatever way you choose."
+  else
+    result "Left LICENSE alone."
+  fi
+else
+  info "Template license has already been removed."
+fi
+
+# --- Finish Up ---
+echo "✅ Finished!  Please check the changes and commit.  If you want to commit everything, do 'git add -A && git commit -m \"Configured project\"'"

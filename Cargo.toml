@@ -1,0 +1,10 @@
+[package]
+name = "bevy_template"
+version = "0.1.0"
+authors = ["Unknown Author <unknown@example.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+bevy = "0.1.3"
