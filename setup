@@ -21,6 +21,10 @@ function die() {
   echo "🛑 FATAL: $1"
 }
 
+function warn() {
+  echo "⚠️ $1"
+}
+
 # --- Set package.name in Cargo.toml ---
 name_with_ext=$(git remote show -n origin | grep "Fetch URL" | cut -d / -f 2-)
 name="${name_with_ext%.*}"
@@ -29,7 +33,7 @@ if grep -q "bevy_template" Cargo.toml; then
     sed -e "s/bevy_template/${name}/" -i "" Cargo.toml || die "Couldn't set the package name to ${name}"
     result "Set package name to ${name}"
   else
-    result "Okay, you should go set the package name in Cargo.toml manually."
+    warn "Okay, you should go set the package name in Cargo.toml manually."
   fi
 else
   info "Package name already set."
@@ -43,7 +47,7 @@ if grep -q "Unknown Author" Cargo.toml; then
       die "Couldn't set the author."
     result "Set author to ${DEFAULT_AUTHOR}"
   else
-    result "Okay, you should go set the author in Cargo.toml manually."
+    warn "Okay, you should go set the author in Cargo.toml manually."
   fi
 else
   info "Author already set."
@@ -57,7 +61,7 @@ if ! grep -qE "^bevy = \"${version}\"\$" Cargo.toml; then
     sed -E -e "s/^bevy = \".*\"\$/bevy = \"${version}\"/" -i "" Cargo.toml || die "Couldn't update Bevy version to ${version}"
     result "Updated to version ${version}"
   else
-    result "Okay, leaving the version alone."
+    warn "Okay, leaving the version alone."
   fi
 else
   info "Bevy is already on the latest version (${version}), skipping version update."
@@ -67,18 +71,28 @@ fi
 if [[ -f .cargo/config.fast ]]; then
   if ask_yn "Fast-compile is not configured. Would you like me to set it up now? This involves installing an external linker and using the nightly Rust compiler."; then
     mv .cargo/config.fast .cargo/config || die "Failed moving config file into place"
-    if [[ $(uname) == "Darwin" ]]; then
-      brew install michaeleisel/zld/zld \
-        || die "Failed running 'brew install michaeleisel/zld/zld -- do you have brew installed? https://brew.sh/"
-      result "Configured fast-compile to use zld linker for debug builds."
-    else
-      echo "⚠️ PLEASE INSTALL LLD!  Instructions are available at https://bevyengine.org/learn/book/getting-started/setup/"
-    fi
+    result "Configured fast-compile to use zld/lld linker for debug builds."
   else
-    result "Okay, not configuring fast-compile."
+    warn "Okay, not configuring fast-compile."
   fi
 elif [[ -f .cargo/config ]] && grep -q -- "-Zshare-generics=y" .cargo/config; then
   info "Fast-compile is already configured. If you want to disable it, delete or comment out .cargo/config"
+fi
+
+if [[ $(uname) == "Darwin" ]]; then
+  if brew list michaeleisel/zld/zld > /dev/null 2> /dev/null ; then
+    info "zld is installed"
+  else
+    if ask_yn "Install zld? Answer yes if you configured fast-install." ; then
+      brew install michaeleisel/zld/zld \
+        || die "Failed running 'brew install michaeleisel/zld/zld -- do you have brew installed? https://brew.sh/"
+      result "installed zld"
+    else
+      warn "Okay, not installing zld."
+    fi
+  fi
+else
+  warn "PLEASE MAKE SURE YOU HAVE LLD INSTALLED!  Instructions are available at https://bevyengine.org/learn/book/getting-started/setup/"
 fi
 
 # --- Install nightly compiler ---
@@ -89,7 +103,7 @@ else
     rustup install nightly || die "Failed to install nightly compiler. Do you have rustup installed?"
     result "Done installing nightly compiler."
   else
-    result "Okay, not installing nightly compiler."
+    warn "Okay, not installing nightly compiler."
   fi
 fi
 
@@ -102,7 +116,7 @@ if rustup toolchain list | grep -q nightly; then
       rustup override set nightly || die "Failed configuring project to use nightly compiler"
       result "Configured project to use the nightly compiler."
     else
-      result "Okay, not configuring project to use the nightly compiler."
+      warn "Okay, not configuring project to use the nightly compiler."
     fi
   fi
 else
@@ -115,7 +129,7 @@ if [[ -f README.md ]] && grep -q "Bevy Template" README.md; then
     echo "# My Project" > README.md || die "Failed replacing README.md"
     result "Replaced README.md with blank one."
   else
-    result "Okay, left template README.md in place."
+    warn "Okay, left template README.md in place."
   fi
 else
   info "README.md has already been replaced"
@@ -127,7 +141,7 @@ if [[ -f LICENSE ]] && grep -q "Nathan Stocks" LICENSE; then
     rm LICENSE || die "Failed deleting LICENSE file."
     result "Deleted the LICENSE file that belonged to the template. Feel free to license your project in whatever way you choose."
   else
-    result "Left LICENSE alone."
+    warn "Okay, left LICENSE alone."
   fi
 else
   info "Template license has already been removed."
