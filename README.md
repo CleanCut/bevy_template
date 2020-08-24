@@ -17,7 +17,8 @@ An opinionated [Bevy] project template with a configuration script to run for th
   - Set the package author
   - Update to the latest version of Bevy
   - Set up the fast-compile config file
-  - Install LLD (not working, yet - submit a PR!)
+  - Install `LLD` on Linux (not working, yet - I need a Linux collaborator to submit a PR!)
+  - Install `zld` on macOS
   - Install the nightly compiler
   - Configure the project to use the nightly compiler
   - Replace the README.md file
