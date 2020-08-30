@@ -91,6 +91,34 @@ if [[ $(uname) == "Darwin" ]]; then
       warn "Okay, not installing zld."
     fi
   fi
+elif [[ $(uname) == "Linux" ]]; then
+  if  [[ $(grep -E '^NAME=' /etc/os-release | cut -d = -f 2 | sed -e 's/"//g') == *"Arch"* ]]; then
+    if pacman -Q "lld" > /dev/null 2> /dev/null ; then
+      echo "lld is installed"
+    else
+      if ask_yn "Install lld? Answer yes if you configured fast-install." ; then
+        [ "$UID" -eq 0 ] || exec sudo "$0" "$@"
+        pacman -Syu lld --noconfirm
+      else
+        echo "Okay, not installing lld"
+      fi
+    fi
+  elif [[ $(grep -E '^NAME=' /etc/os-release | cut -d = -f 2 | sed -e 's/"//g') == *"Ubuntu"* ]]; then
+    # TODO
+    echo UBUNTU
+  elif [[ $(grep -E '^NAME=' /etc/os-release | cut -d = -f 2 | sed -e 's/"//g') == *"Debian"* ]]; then
+    # TODO
+    echo DEBIAN
+  elif [[ $(grep -E '^NAME=' /etc/os-release | cut -d = -f 2 | sed -e 's/"//g') == *"openSUSE"* ]]; then
+    # TODO
+    echo OPENSUSE
+  elif [[ $(grep -E '^NAME=' /etc/os-release | cut -d = -f 2 | sed -e 's/"//g') == *"Fedora"* ]]; then
+    # TODO
+    echo FEDORA
+  elif [[ $(grep -E '^NAME=' /etc/os-release | cut -d = -f 2 | sed -e 's/"//g') == *"CentOS"* ]]; then
+    # TODO
+    echo CENTOS
+  fi
 else
   warn "PLEASE MAKE SURE YOU HAVE LLD INSTALLED!  Instructions are available at https://bevyengine.org/learn/book/getting-started/setup/"
 fi
