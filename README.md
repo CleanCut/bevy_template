@@ -28,7 +28,7 @@ An opinionated [Bevy] project template with a configuration script to run for th
 [Use this template]: https://github.com/CleanCut/bevy_template/generate
 
 ## :sparkling_heart: Help Needed!
-We need help from Linux and Windows users!  For example:
+We need help from Linux and Windows users!  Please submit pull requests or open issues! For example:
 - The `setup` script _ought_ to mostly work on Linux, but it needs to be tested
 - `setup` needs code to install LLD on various Linux Distros
 - The `setup` script doesn't support Windows at all, yet! We need to figure out a way to do the equivalent stuff for Windows users.
