@@ -68,9 +68,9 @@ else
 fi
 
 # --- Configure fast-compile ---
-if [[ -f .cargo/config.fast ]]; then
+if [[ -f .cargo/config_fast_builds ]]; then
   if ask_yn "Fast-compile is not configured. Would you like me to set it up now? This involves installing an external linker and using the nightly Rust compiler."; then
-    mv .cargo/config.fast .cargo/config || die "Failed moving config file into place"
+    mv .cargo/config_fast_builds .cargo/config.toml || die "Failed moving config file into place"
     result "Configured fast-compile to use zld/lld linker for debug builds."
   else
     warn "Okay, not configuring fast-compile."
