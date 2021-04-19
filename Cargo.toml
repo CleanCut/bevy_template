@@ -7,7 +7,7 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-bevy = "0.4.0"
+bevy = "0.5.0"
 
 # Compile all the *dependencies* in optimized release mode even if `--release` is not passed in
 [profile.dev]
