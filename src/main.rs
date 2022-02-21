@@ -1,10 +1,10 @@
 use bevy::prelude::*;
 
 fn main() {
-    App::build()
+    App::new()
         .add_plugins(DefaultPlugins)
-        .add_startup_system(template_setup.system())
-        .add_system(template_animation.system())
+        .add_startup_system(template_setup)
+        .add_system(template_animation)
         .run();
 }
 
@@ -12,9 +12,9 @@ fn template_setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     commands.spawn_bundle(OrthographicCameraBundle::new_2d());
     commands.spawn_bundle(Text2dBundle {
         text: Text::with_section(
-            "Would you like to play a game?",
+            "Shall we play a game?",
             TextStyle {
-                font: asset_server.load("fonts/tiny.ttf"),
+                font: asset_server.load("fonts/PixelSmall.ttf"),
                 font_size: 58.0,
                 color: Color::WHITE,
             },

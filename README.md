@@ -13,14 +13,13 @@ An opinionated [Bevy] project template with a configuration script to run for th
 - **Git configured** - `.gitignore` is already set up for you.
 - **Setup script** - Run the `setup` script to configure/install things like optional linkers, nightly compiler, etc.  Configuration choices include:
   - Set the package name
-  - Set the package author
   - Update to the latest version of Bevy
   - Set up the fast-compile config file
   - Install `zld` on macOS (we need Windows and Linux volunteers to help bring this sort of feature to their platforms!)
   - Install the nightly compiler
   - Configure the project to use the nightly compiler
-  - Replace the README.md file
-  - Delete the LICENSE file
+  - Replace the `README.md` file
+  - Delete the `license` directory
 - **Not license-restricted** - The included license is _for the template itself_.  Projects starting with this template may use any license (or no license at all).
 
 [Bevy]: https://github.com/bevyengine/bevy
@@ -31,3 +30,9 @@ We need help from Linux and Windows users!  Please submit pull requests or open 
 - The `setup` script _ought_ to mostly work on Linux, but it needs to be tested
 - `setup` needs code to install LLD on various Linux Distros
 - The `setup` script doesn't support Windows at all, yet! We need to figure out a way to do the equivalent stuff for Windows users.
+
+## Software License
+
+Distributed under the terms of both the MIT license and the Apache License (Version 2.0).
+
+See [license/APACHE](license/APACHE) and [license/MIT](license/MIT).

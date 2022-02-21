@@ -39,20 +39,6 @@ else
   info "Package name already set."
 fi
 
-# --- Set package.authors in Cargo.toml ---
-if grep -q "Unknown Author" Cargo.toml; then
-  DEFAULT_AUTHOR="$(git config --global user.name) <$(git config --global user.email)>"
-  if ask_yn "Set the author to ${DEFAULT_AUTHOR}?"; then
-    sed -E -e "s/Unknown Author <unknown@example.com>/${DEFAULT_AUTHOR}/" -i "" Cargo.toml ||
-      die "Couldn't set the author."
-    result "Set author to ${DEFAULT_AUTHOR}"
-  else
-    warn "Okay, you should go set the author in Cargo.toml manually."
-  fi
-else
-  info "Author already set."
-fi
-
 # --- Set latest version of Bevy ---
 json=$(curl --silent --user-agent "bevy_template (github.com/cleancut/bevy_template)" https://crates.io/api/v1/crates/bevy)
 version=$(echo "${json}" | grep -oE '"max_version":".*?"' | cut -d '"' -f 4)
@@ -136,16 +122,16 @@ else
 fi
 
 # --- Delete the license ---
-if [[ -f LICENSE ]] && grep -q "Nathan Stocks" LICENSE; then
-  if ask_yn "Delete the LICENSE file so you can add your own?"; then
-    rm LICENSE || die "Failed deleting LICENSE file."
-    result "Deleted the LICENSE file that belonged to the template. Feel free to license your project in whatever way you choose."
+if [[ -f license ]] && grep -qr "Nathan Stocks" license; then
+  if ask_yn "Delete the dual MIT/Apache 2.0 license files?"; then
+    rm -rf license || die "Failed deleting the license files."
+    result "Deleted the existing license files. Feel free to license your project in whatever way you choose."
   else
-    warn "Okay, left LICENSE alone."
+    warn "Okay, left the dual license alone."
   fi
 else
   info "Template license has already been removed."
 fi
 
 # --- Finish Up ---
-echo "✅ Finished!  Please check the changes and commit.  If you want to commit everything, do 'git add -A && git commit -m \"Configured project\"'"
+echo -e "✅ Finished! Please check the changes. If everything looks good then you can delete this setup script and commit everything with:\n'rm setup && git add -A && git commit -m \"Configured project\"'"
