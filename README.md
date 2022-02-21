@@ -31,6 +31,10 @@ We need help from Linux and Windows users!  Please submit pull requests or open 
 - `setup` needs code to install LLD on various Linux Distros
 - The `setup` script doesn't support Windows at all, yet! We need to figure out a way to do the equivalent stuff for Windows users.
 
+## Changelog
+
+See [the Releases page.](https://github.com/CleanCut/bevy_template/releases)
+
 ## Software License
 
 Distributed under the terms of both the MIT license and the Apache License (Version 2.0).
