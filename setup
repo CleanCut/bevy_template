@@ -122,7 +122,7 @@ else
 fi
 
 # --- Delete the license ---
-if [[ -f license ]] && grep -qr "Nathan Stocks" license; then
+if [[ -d license ]] && grep -qr "Nathan Stocks" license; then
   if ask_yn "Delete the dual MIT/Apache 2.0 license files?"; then
     rm -rf license || die "Failed deleting the license files."
     result "Deleted the existing license files. Feel free to license your project in whatever way you choose."
@@ -134,4 +134,4 @@ else
 fi
 
 # --- Finish Up ---
-echo -e "✅ Finished! Please check the changes. If everything looks good then you can delete this setup script and commit everything with:\n'rm setup && git add -A && git commit -m \"Configured project\"'"
+echo -e "✅ Finished! Please check the changes. If everything looks good then you can delete this setup script and commit everything with:\nrm setup && git add -A && git commit -m \"Configured project\""
