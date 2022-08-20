@@ -1,3 +1,9 @@
+# NOTE: No longer maintained
+
+This repository has been archived in favor of [bevy_game_template](https://github.com/NiklasEi/bevy_game_template). Go use that. :wink:
+
+---
+
 # Bevy Template
 
 An opinionated [Bevy] project template with a configuration script to run for the more complex parts (like setting up the fast-compile setup).
